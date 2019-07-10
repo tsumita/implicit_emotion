@@ -4,6 +4,7 @@ HOME_DIR = os.environ['HOME']
 ALLENNLP_PATH = 'allennlp/'
 
 DATA_PATH = 'data/'
+SRC_PATH  = 'src/'
 CACHE_PATH = '.cache'
 PREPROCESSED_DATA_PATH = os.path.join(DATA_PATH, 'preprocessed')
 RESULTS_PATH = os.path.join(DATA_PATH, 'results')
@@ -16,6 +17,8 @@ GLOVE_EMB_PATH = os.path.join(EMBEDDINGS_DIR, 'glove.840B.300d.txt')
 
 ELMO_OPTIONS = os.path.join(EMBEDDINGS_DIR, 'elmo_2x4096_512_2048cnn_2xhighway_options.json')
 ELMO_WEIGHTS = os.path.join(EMBEDDINGS_DIR, 'elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5')
+
+ELMO_JP_PATH = os.path.join(SRC_PATH, 'layers/models/elmo_jp')
 
 GLOVE_TWITTER_200_EMB_PATH = os.path.join(EMBEDDINGS_DIR, 'glove.twitter.27B.200d.txt')
 GLOVE_TWITTER_100_EMB_PATH = os.path.join(EMBEDDINGS_DIR, 'glove.twitter.27B.100d.txt')

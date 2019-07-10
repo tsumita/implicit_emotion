@@ -48,7 +48,11 @@ class SlantedTriangularScheduler(object):
         if step < cut:
             p = step / cut
         else:
-            p = 1 - ((step - cut) / (cut * (1 / self.cut_fraction - 1)))
+            denom = cut * (1 / self.cut_fraction - 1)
+            if denom == 0.:
+                p = 1
+            else:
+                p = 1 - ((step - cut) / denom)
         learning_rate = self.max_lr * (1 + p * (self.ratio - 1)) / self.ratio
 
         return learning_rate

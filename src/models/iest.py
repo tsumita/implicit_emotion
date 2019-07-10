@@ -486,8 +486,11 @@ class IESTClassifier(nn.Module):
 
             # FIXME: Find nicer way to do this <2018-06-25 16:05:20, Jorge Balazs>
             if self.word_encoding_method == 'elmo':
-                embedded, elmo_masks = embedded
-                elmo_masks = elmo_masks.float()
+#                 embedded, elmo_masks = embedded
+#                 elmo_masks = elmo_masks.float()
+                
+                embedded = embedded
+                elmo_masks = 1
 
                 # elmo_masks are needed when masking the output from the ELMo
                 # layer. When using the BiLSTM after ELMo we use the sentence

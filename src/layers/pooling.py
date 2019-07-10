@@ -157,7 +157,7 @@ class MaxPoolingLayer(nn.Module):
         # the masks are of dimension (batch_size, seq_len) and we need them
         # to be (batch_size, seq_len, hidden_x_dirs)
         masks = kwargs['masks']
-        masks = masks.unsqueeze(2).repeat(1, 1, hidden_x_dirs)
+#         masks = masks.unsqueeze(2).repeat(1, 1, hidden_x_dirs)
         masked_sequences = torch.mul(sequences, masks)
 
         # now, we want to obtain the maximum value along the sequence

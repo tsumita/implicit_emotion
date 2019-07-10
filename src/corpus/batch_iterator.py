@@ -53,6 +53,7 @@ class IESTBatch(BaseNLPBatch):
         # This class expects examples to be a list containing dicts
         # with at least a 'sequence', a 'label' key and a 'char_sequence'
         # if use_chars is true
+        
         ids = [example['id'] for example in self.examples]
 
         sequences = [example['sequence'] for example in self.examples]

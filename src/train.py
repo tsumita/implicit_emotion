@@ -8,10 +8,12 @@ from .utils.torch import to_var
 
 from . import config
 
+import pickle as pkl
+
 
 class Trainer(object):
     def __init__(self, model, optimizer, loss_function, num_epochs=10,
-                 use_cuda=True, log_interval=20):
+                 use_cuda=True, log_interval=10):
 
         self.model = model
 
@@ -22,15 +24,20 @@ class Trainer(object):
 
         self.use_cuda = use_cuda
         self.log_interval = log_interval
+        
+        self.trn_loss_list = []
+        self.tst_loss_list = []
 
-    def train_epoch(self, train_batches, epoch, writer=None):
+    def train_epoch(self, train_batches, test_batch, epoch, writer=None):
         self.model.train()  # Depends on using pytorch
         num_batches = train_batches.num_batches
 
         total_loss = 0
         for batch_index in tqdm(range(num_batches), desc='Batch'):
             self.model.zero_grad()
-            batch = train_batches[batch_index]
+#             batch = [batch_index]
+#             ret_dict = self.model(batch)
+            batch = train_batches.__getitem__(batch_index)
             ret_dict = self.model(batch)
 
             # FIXME: This part depends both on the way the batch is built and
@@ -54,6 +61,8 @@ class Trainer(object):
             # We ignore batch 0's output for prettier logging
             if batch_index != 0:
                 total_loss += batch_loss.item()
+                
+            print("train loss: ", batch_loss.item())
 
             if (batch_index % self.log_interval == 0 and batch_index != 0):
 
@@ -64,7 +73,26 @@ class Trainer(object):
                     # Should have a proper global step <2018-06-26 15:18:11, Jorge Balazs>
                     writer.add_scalar('data/train_loss', avg_loss,
                                       self.optimizer.step_num)
+                self.trn_loss_list.append(avg_loss)
+                torch.save(self.model.state_dict(), f'model/iest_classifier_{epoch}eopch_{batch_index}batch.mdl')
+                with open("result/train_loss.lst", 'wb') as f:
+                    pkl.dump(self.trn_loss_list, f)
+                    
+                    
+                self.model.eval()
+                ret_dict = self.model(test_batch)
+                labels = test_batch['labels']
+                labels = to_var(torch.LongTensor(labels), self.use_cuda,
+                                requires_grad=False)
+                
+                batch_loss = self.loss_function(ret_dict['logits'], labels)
+                self.tst_loss_list.append(batch_loss)
+                with open("result/test_loss.lst", 'wb') as f:
+                    pkl.dump(self.tst_loss_list, f)
+                
                 total_loss = 0
+                self.model.train()
+                
 
     def evaluate(self, dev_batches, epoch=None, writer=None):
         self.model.eval()
@@ -84,6 +112,7 @@ class Trainer(object):
         sent_reprs = []
         tqdm.write("Evaluating...")
         for batch_index in range(num_batches):
+            print("batch_idx: {}".format(batch_index))
             batch = dev_batches[batch_index]
             out = self.model(batch)
 
@@ -112,3 +141,17 @@ class Trainer(object):
                     'output': output,
                     'sent_reprs': sent_reprs}
         return ret_dict
+    
+    
+    
+def realtime_graph(x, y, title, y_label, x_label='batch iteration', color='r'):
+    plt.clf()           # 画面初期化
+    line, = plt.plot(x, y, color, label=label)
+    line.set_ydata(y)   # y値を更新
+    plt.title(title)  
+    plt.xlabel(x_label)    
+    plt.ylabel(y_label)    
+    plt.legend()        
+    plt.grid()          
+    plt.draw()          
+    plt.pause(5)     # 更新時間間隔

@@ -20,7 +20,7 @@ def to_var(tensor, use_cuda, requires_grad=True):
     return tensor
 
 
-def pack_forward(module, emb_batch, lengths, use_cuda=True, batch_first=True):
+def pack_forward(module, emb_batch, lengths, use_cuda=False, batch_first=True):
     """Based on: https://github.com/facebookresearch/InferSent/blob/4b7f9ec7192fc0eed02bc890a56612efc1fb1147/models.py
 
        Automatically sort and pck a padded sequence, feed it to an RNN and then
